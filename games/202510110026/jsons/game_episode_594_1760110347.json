@@ -1,0 +1,173 @@
+{
+  "episode": 594,
+  "steps": 344,
+  "total_reward": 18.0,
+  "illegal_moves": 0,
+  "passes": 326,
+  "avg_loss": 121.28707122802734,
+  "epsilon": 0.046296535966244,
+  "moves": [
+    {
+      "step": 1,
+      "x": 6,
+      "y": 4,
+      "z": 5,
+      "color": "black",
+      "captured": [],
+      "boardState": "6,4,5:black"
+    },
+    {
+      "step": 2,
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;6,4,5:black"
+    },
+    {
+      "step": 3,
+      "x": 5,
+      "y": 1,
+      "z": 1,
+      "color": "black",
+      "captured": [],
+      "boardState": "2,0,2:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 4,
+      "x": 4,
+      "y": 3,
+      "z": 4,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;4,3,4:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 5,
+      "x": 3,
+      "y": 5,
+      "z": 6,
+      "color": "black",
+      "captured": [],
+      "boardState": "2,0,2:white;3,5,6:black;4,3,4:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 6,
+      "x": 4,
+      "y": 2,
+      "z": 0,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;3,5,6:black;4,2,0:white;4,3,4:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 7,
+      "x": 4,
+      "y": 3,
+      "z": 1,
+      "color": "black",
+      "captured": [],
+      "boardState": "2,0,2:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,4:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 8,
+      "x": 5,
+      "y": 2,
+      "z": 4,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,4:white;5,1,1:black;5,2,4:white;6,4,5:black"
+    },
+    {
+      "step": 9,
+      "x": 3,
+      "y": 2,
+      "z": 6,
+      "color": "black",
+      "captured": [],
+      "boardState": "2,0,2:white;3,2,6:black;3,5,6:black;4,2,0:white;4,3,1:black;4,3,4:white;5,1,1:black;5,2,4:white;6,4,5:black"
+    },
+    {
+      "step": 10,
+      "x": 3,
+      "y": 3,
+      "z": 4,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;3,2,6:black;3,3,4:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,4:white;5,1,1:black;5,2,4:white;6,4,5:black"
+    },
+    {
+      "step": 11,
+      "x": 3,
+      "y": 2,
+      "z": 0,
+      "color": "black",
+      "captured": [],
+      "boardState": "2,0,2:white;3,2,0:black;3,2,6:black;3,3,4:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,4:white;5,1,1:black;5,2,4:white;6,4,5:black"
+    },
+    {
+      "step": 12,
+      "x": 2,
+      "y": 5,
+      "z": 1,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;2,5,1:white;3,2,0:black;3,2,6:black;3,3,4:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,4:white;5,1,1:black;5,2,4:white;6,4,5:black"
+    },
+    {
+      "step": 13,
+      "x": 6,
+      "y": 5,
+      "z": 5,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;2,5,1:white;3,2,0:black;3,2,6:black;3,3,4:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,4:white;5,1,1:black;5,2,4:white;6,4,5:black;6,5,5:white"
+    },
+    {
+      "step": 14,
+      "x": 5,
+      "y": 5,
+      "z": 4,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;2,5,1:white;3,2,0:black;3,2,6:black;3,3,4:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,4:white;5,1,1:black;5,2,4:white;5,5,4:white;6,4,5:black;6,5,5:white"
+    },
+    {
+      "step": 15,
+      "x": 4,
+      "y": 3,
+      "z": 3,
+      "color": "black",
+      "captured": [],
+      "boardState": "2,0,2:white;2,5,1:white;3,2,0:black;3,2,6:black;3,3,4:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,3:black;4,3,4:white;5,1,1:black;5,2,4:white;5,5,4:white;6,4,5:black;6,5,5:white"
+    },
+    {
+      "step": 16,
+      "x": 2,
+      "y": 6,
+      "z": 5,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;2,5,1:white;2,6,5:white;3,2,0:black;3,2,6:black;3,3,4:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,3:black;4,3,4:white;5,1,1:black;5,2,4:white;5,5,4:white;6,4,5:black;6,5,5:white"
+    },
+    {
+      "step": 17,
+      "x": 5,
+      "y": 4,
+      "z": 5,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;2,5,1:white;2,6,5:white;3,2,0:black;3,2,6:black;3,3,4:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,3:black;4,3,4:white;5,1,1:black;5,2,4:white;5,4,5:white;5,5,4:white;6,4,5:black;6,5,5:white"
+    },
+    {
+      "step": 18,
+      "x": 6,
+      "y": 0,
+      "z": 0,
+      "color": "black",
+      "captured": [],
+      "boardState": "2,0,2:white;2,5,1:white;2,6,5:white;3,2,0:black;3,2,6:black;3,3,4:white;3,5,6:black;4,2,0:white;4,3,1:black;4,3,3:black;4,3,4:white;5,1,1:black;5,2,4:white;5,4,5:white;5,5,4:white;6,0,0:black;6,4,5:black;6,5,5:white"
+    }
+  ]
+}

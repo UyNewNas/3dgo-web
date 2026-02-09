@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D围棋 - 带提子机制</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Three.js核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/controls/OrbitControls.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8B5A2B',
+                        secondary: '#D2B48C',
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .game-container {
+                @apply relative w-full h-screen overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100;
+            }
+            .controls-panel {
+                @apply absolute top-4 left-4 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-lg z-10 flex flex-col gap-3 max-w-[200px];
+            }
+            .moves-panel {
+                @apply absolute top-4 right-4 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-lg z-10 max-h-[calc(100vh-2rem)] overflow-y-auto w-[220px];
+            }
+            .moves-list {
+                @apply space-y-1 text-sm;
+            }
+            .move-item {
+                @apply flex items-center gap-2 p-1 rounded hover:bg-gray-100;
+            }
+            .capture-item {
+                @apply text-red-500 italic;
+            }
+            .move-number {
+                @apply w-6 text-center text-gray-500;
+            }
+            .piece-indicator {
+                @apply w-4 h-4 rounded-full;
+            }
+            .btn {
+                @apply px-3 py-2 rounded-md transition-all duration-200 flex items-center justify-center gap-2;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/80;
+            }
+            .status-display {
+                @apply text-center py-2 font-medium;
+            }
+            #gameCanvas {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- 左侧控制面板 -->
+        <div class="controls-panel">
+            <h2 class="text-xl font-bold text-primary">3D围棋</h2>
+            <div class="status-display" id="status">黑方回合</div>
+            <button class="btn btn-primary" id="resetBtn">
+                <i class="fa fa-refresh"></i> 重新开始
+            </button>
+            <button class="btn btn-primary" id="resetViewBtn">
+                <i class="fa fa-compass"></i> 重置视角
+            </button>
+            <button class="btn btn-primary" id="undoBtn">
+                <i class="fa fa-undo"></i> 悔棋
+            </button>
+            <div class="text-sm text-gray-600">
+                <p>操作: 点击顶点落子</p>
+                <p>左键拖动: 旋转</p>
+                <p>右键拖动: 平移</p>
+                <p>滚轮: 缩放</p>
+            </div>
+            <div id="errorMsg" class="text-sm text-red-500 hidden"></div>
+        </div>
+        
+        <!-- 右侧落子记录面板 -->
+        <div class="moves-panel">
+            <h3 class="text-lg font-bold text-primary mb-2">落子记录</h3>
+            <div id="movesList" class="moves-list">
+                <!-- 落子记录将在这里动态生成 -->
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <script>
+        // 游戏状态 - 4×4×4棋盘
+        const gameState = {
+            currentPlayer: 'black',
+            boardSize: 4,
+            pieces: new Map(), // 存储当前棋盘上的棋子
+            moveHistory: [], // 记录落子历史 [{step, x, y, z, color, captured}]
+            isGameOver: false,
+            defaultCameraPosition: new THREE.Vector3(12, 12, 12)
+        };
+
+        // 3D空间中的6个相邻方向（x,y,z）
+        const directions = [
+            [1, 0, 0],  // 右
+            [-1, 0, 0], // 左
+            [0, 1, 0],  // 上
+            [0, -1, 0], // 下
+            [0, 0, 1],  // 前
+            [0, 0, -1]  // 后
+        ];
+
+        // 初始化Three.js场景
+        function initScene() {
+            try {
+                if (typeof THREE === 'undefined') {
+                    throw new Error("Three.js核心库未加载成功");
+                }
+                
+                // 检查WebGL支持
+                if (!Detector.webgl) {
+                    throw new Error("您的浏览器不支持WebGL，无法运行3D围棋");
+                }
+                
+                // 创建场景
+                const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0xf0e6d2);
+                
+                // 添加光源
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+                scene.add(ambientLight);
+                
+                const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.6);
+                directionalLight1.position.set(18, 24, 18);
+                scene.add(directionalLight1);
+                
+                const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.6);
+                directionalLight2.position.set(-18, -24, -18);
+                scene.add(directionalLight2);
+                
+                // 创建相机
+                const camera = new THREE.PerspectiveCamera(
+                    75, 
+                    window.innerWidth / window.innerHeight, 
+                    0.1, 
+                    1000
+                );
+                camera.position.copy(gameState.defaultCameraPosition);
+                camera.lookAt(0, 0, 0);
+                
+                // 创建渲染器
+                const canvas = document.getElementById('gameCanvas');
+                const renderer = new THREE.WebGLRenderer({
+                    canvas: canvas,
+                    antialias: true
+                });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                
+                // 使用完全无限制的控制器
+                let controls;
+                if (window.FreeControls) {
+                    controls = new FreeControls(camera, renderer.domElement);
+                } else if (THREE.OrbitControls) {
+                    controls = new THREE.OrbitControls(camera, renderer.domElement);
+                    
+                    // 彻底移除所有旋转限制
+                    controls.minPolarAngle = 0;
+                    controls.maxPolarAngle = Math.PI * 2;
+                    controls.minAzimuthAngle = -Infinity;
+                    controls.maxAzimuthAngle = Infinity;
+                    controls.enableFlip = true;
+                }
+                
+                if (controls) {
+                    controls.enableDamping = true;
+                    controls.dampingFactor = 0.1;
+                    controls.rotateSpeed = 1.0;
+                    controls.zoomSpeed = 0.7;
+                    controls.panSpeed = 0.5;
+                    controls.enablePan = true;
+                }
+                
+                // 窗口大小调整
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+                
+                return { scene, camera, renderer, controls };
+            } catch (error) {
+                document.getElementById('errorMsg').textContent = error.message;
+                document.getElementById('errorMsg').classList.remove('hidden');
+                console.error("初始化场景失败:", error);
+                return null;
+            }
+        }
+
+        // 创建3D棋盘（4×4×4）
+        function createBoard(scene, size) {
+            const boardGroup = new THREE.Group();
+            const boardDimension = size - 1;
+            const cellSize = 1.8;
+            
+            // 创建线条材质
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x5D4037,
+                linewidth: 2
+            });
+            
+            // 主线材质（边框和中线）
+            const mainLineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x3E2723,
+                linewidth: 3
+            });
+            
+            // 绘制x轴方向的线
+            for (let y = 0; y < size; y++) {
+                for (let z = 0; z < size; z++) {
+                    const points = [
+                        new THREE.Vector3(0, y * cellSize, z * cellSize),
+                        new THREE.Vector3(boardDimension * cellSize, y * cellSize, z * cellSize)
+                    ];
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const isMainLine = y === 0 || y === size-1 || z === 0 || z === size-1 ||
+                                     y === Math.floor(size/2) || z === Math.floor(size/2);
+                    const line = new THREE.Line(geometry, isMainLine ? mainLineMaterial : lineMaterial);
+                    boardGroup.add(line);
+                }
+            }
+            
+            // 绘制y轴方向的线
+            for (let x = 0; x < size; x++) {
+                for (let z = 0; z < size; z++) {
+                    const points = [
+                        new THREE.Vector3(x * cellSize, 0, z * cellSize),
+                        new THREE.Vector3(x * cellSize, boardDimension * cellSize, z * cellSize)
+                    ];
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const isMainLine = x === 0 || x === size-1 || z === 0 || z === size-1 ||
+                                     x === Math.floor(size/2) || z === Math.floor(size/2);
+                    const line = new THREE.Line(geometry, isMainLine ? mainLineMaterial : lineMaterial);
+                    boardGroup.add(line);
+                }
+            }
+            
+            // 绘制z轴方向的线
+            for (let x = 0; x < size; x++) {
+                for (let y = 0; y < size; y++) {
+                    const points = [
+                        new THREE.Vector3(x * cellSize, y * cellSize, 0),
+                        new THREE.Vector3(x * cellSize, y * cellSize, boardDimension * cellSize)
+                    ];
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const isMainLine = x === 0 || x === size-1 || y === 0 || y === size-1 ||
+                                     x === Math.floor(size/2) || y === Math.floor(size/2);
+                    const line = new THREE.Line(geometry, isMainLine ? mainLineMaterial : lineMaterial);
+                    boardGroup.add(line);
+                }
+            }
+            
+            // 创建顶点标记（落子点）
+            const vertexGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+            const vertexMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x8B5A2B,
+                shininess: 30
+            });
+            
+            for (let x = 0; x < size; x++) {
+                for (let y = 0; y < size; y++) {
+                    for (let z = 0; z < size; z++) {
+                        const vertex = new THREE.Mesh(vertexGeometry, vertexMaterial);
+                        vertex.position.set(x * cellSize, y * cellSize, z * cellSize);
+                        vertex.userData = { type: 'vertex', x, y, z };
+                        boardGroup.add(vertex);
+                    }
+                }
+            }
+            
+            // 将棋盘居中
+            const offset = (boardDimension * cellSize) / 2;
+            boardGroup.position.set(-offset, -offset, -offset);
+            
+            scene.add(boardGroup);
+            return { boardGroup, cellSize };
+        }
+
+        // 添加棋子
+        function placePiece(scene, x, y, z, color, cellSize) {
+            const offset = ((gameState.boardSize - 1) * cellSize) / 2;
+            
+            const geometry = new THREE.SphereGeometry(0.35, 32, 32);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: color === 'black' ? 0x000000 : 0xffffff,
+                shininess: 50
+            });
+            
+            const piece = new THREE.Mesh(geometry, material);
+            piece.position.set(
+                x * cellSize - offset, 
+                y * cellSize - offset, 
+                z * cellSize - offset
+            );
+            piece.userData = { type: 'piece', x, y, z, color };
+            
+            scene.add(piece);
+            return piece;
+        }
+
+        // 获取指定位置的棋子颜色，若无则返回null
+        function getPieceColor(x, y, z) {
+            const key = `${x},${y},${z}`;
+            return gameState.pieces.has(key) ? gameState.pieces.get(key).color : null;
+        }
+
+        // 检查位置是否在棋盘范围内
+        function isOnBoard(x, y, z) {
+            return x >= 0 && x < gameState.boardSize &&
+                   y >= 0 && y < gameState.boardSize &&
+                   z >= 0 && z < gameState.boardSize;
+        }
+
+        // 查找与指定位置相连的所有同色棋子（3D连通性）
+        function findConnectedGroup(x, y, z) {
+            const color = getPieceColor(x, y, z);
+            if (!color) return [];
+            
+            const visited = new Set();
+            const queue = [[x, y, z]];
+            const key = `${x},${y},${z}`;
+            visited.add(key);
+            
+            while (queue.length > 0) {
+                const [cx, cy, cz] = queue.shift();
+                
+                // 检查6个方向的相邻位置
+                for (const [dx, dy, dz] of directions) {
+                    const nx = cx + dx;
+                    const ny = cy + dy;
+                    const nz = cz + dz;
+                    
+                    if (isOnBoard(nx, ny, nz)) {
+                        const nKey = `${nx},${ny},${nz}`;
+                        if (!visited.has(nKey) && getPieceColor(nx, ny, nz) === color) {
+                            visited.add(nKey);
+                            queue.push([nx, ny, nz]);
+                        }
+                    }
+                }
+            }
+            
+            // 将Set转换为坐标数组
+            return Array.from(visited).map(key => {
+                const [x, y, z] = key.split(',').map(Number);
+                return { x, y, z };
+            });
+        }
+
+        // 计算一组棋子的气数
+        function calculateLiberties(group) {
+            const liberties = new Set();
+            
+            for (const {x, y, z} of group) {
+                // 检查6个方向的相邻位置
+                for (const [dx, dy, dz] of directions) {
+                    const nx = x + dx;
+                    const ny = y + dy;
+                    const nz = z + dz;
+                    
+                    if (isOnBoard(nx, ny, nz) && !getPieceColor(nx, ny, nz)) {
+                        // 空顶点是气
+                        liberties.add(`${nx},${ny},${nz}`);
+                    }
+                }
+            }
+            
+            return liberties.size;
+        }
+
+        // 提走没有气的棋子
+        function capturePieces(scene, color) {
+            const captured = [];
+            const visited = new Set();
+            
+            // 遍历棋盘上所有指定颜色的棋子
+            gameState.pieces.forEach((piece, key) => {
+                if (piece.color === color && !visited.has(key)) {
+                    const [x, y, z] = key.split(',').map(Number);
+                    const group = findConnectedGroup(x, y, z);
+                    
+                    // 标记组内所有棋子为已访问
+                    group.forEach(pos => visited.add(`${pos.x},${pos.y},${pos.z}`));
+                    
+                    // 检查气数，为0则提子
+                    if (calculateLiberties(group) === 0) {
+                        // 记录被提的棋子
+                        group.forEach(pos => {
+                            captured.push(pos);
+                            // 从场景中移除
+                            const pKey = `${pos.x},${pos.y},${pos.z}`;
+                            if (gameState.pieces.has(pKey)) {
+                                scene.remove(gameState.pieces.get(pKey).mesh);
+                                gameState.pieces.delete(pKey);
+                            }
+                        });
+                    }
+                }
+            });
+            
+            return captured;
+        }
+
+        // 检查落子是否会导致自杀（自己的棋子组没有气且没有提走对方棋子）
+        function isSuicide(x, y, z, color, scene) {
+            // 临时放置棋子
+            const tempKey = `${x},${y},${z}`;
+            const tempPiece = {x, y, z, color, mesh: null};
+            gameState.pieces.set(tempKey, tempPiece);
+            
+            // 检查这个落子形成的组是否有气
+            const group = findConnectedGroup(x, y, z);
+            const hasLiberties = calculateLiberties(group) > 0;
+            
+            // 检查是否能提走对方棋子
+            const opponentColor = color === 'black' ? 'white' : 'black';
+            const tempCaptured = [];
+            const visited = new Set();
+            
+            gameState.pieces.forEach((piece, key) => {
+                if (piece.color === opponentColor && !visited.has(key)) {
+                    const [px, py, pz] = key.split(',').map(Number);
+                    const oppGroup = findConnectedGroup(px, py, pz);
+                    oppGroup.forEach(pos => visited.add(`${pos.x},${pos.y},${pos.z}`));
+                    
+                    if (calculateLiberties(oppGroup) === 0) {
+                        tempCaptured.push(...oppGroup);
+                    }
+                }
+            });
+            
+            // 移除临时棋子
+            gameState.pieces.delete(tempKey);
+            
+            // 自杀：没有气且没有提走对方棋子
+            return !hasLiberties && tempCaptured.length === 0;
+        }
+
+        // 记录落子历史
+        function recordMove(x, y, z, color, captured) {
+            const step = gameState.moveHistory.length + 1;
+            const move = { 
+                step, 
+                x, y, z, 
+                color,
+                captured: captured.map(pos => ({...pos})) // 记录被提的棋子
+            };
+            gameState.moveHistory.push(move);
+            
+            // 更新UI显示
+            updateMoveHistoryUI(move);
+        }
+
+        // 更新落子记录UI
+        function updateMoveHistoryUI(move) {
+            const movesList = document.getElementById('movesList');
+            
+            // 添加落子记录
+            const moveElement = document.createElement('div');
+            moveElement.className = 'move-item';
+            moveElement.innerHTML = `
+                <span class="move-number">${move.step}</span>
+                <span class="piece-indicator" style="background-color: ${move.color === 'black' ? '#000' : '#fff'}; border: 1px solid #999"></span>
+                <span>(${move.x}, ${move.y}, ${move.z})</span>
+            `;
+            movesList.appendChild(moveElement);
+            
+            // 如果有提子，添加提子记录
+            if (move.captured && move.captured.length > 0) {
+                const captureElement = document.createElement('div');
+                captureElement.className = 'move-item capture-item';
+                captureElement.innerHTML = `
+                    <span class="move-number"></span>
+                    <span>提走 ${move.captured.length} 子</span>
+                `;
+                movesList.appendChild(captureElement);
+            }
+            
+            // 自动滚动到底部
+            movesList.scrollTop = movesList.scrollHeight;
+        }
+
+        // 清空落子记录UI
+        function clearMoveHistoryUI() {
+            document.getElementById('movesList').innerHTML = '';
+        }
+
+        // 悔棋功能（考虑提子）
+        function undoMove(scene, cellSize) {
+            if (gameState.moveHistory.length === 0) return false;
+            
+            // 获取最后一步
+            const lastMove = gameState.moveHistory.pop();
+            const key = `${lastMove.x},${lastMove.y},${lastMove.z}`;
+            
+            // 从场景中移除最后一步的棋子
+            if (gameState.pieces.has(key)) {
+                const piece = gameState.pieces.get(key);
+                scene.remove(piece.mesh);
+                gameState.pieces.delete(key);
+            }
+            
+            // 恢复被提走的棋子
+            if (lastMove.captured && lastMove.captured.length > 0) {
+                const opponentColor = lastMove.color === 'black' ? 'white' : 'black';
+                lastMove.captured.forEach(pos => {
+                    const pKey = `${pos.x},${pos.y},${pos.z}`;
+                    if (!gameState.pieces.has(pKey)) {
+                        const piece = placePiece(scene, pos.x, pos.y, pos.z, opponentColor, cellSize);
+                        gameState.pieces.set(pKey, {
+                            x: pos.x,
+                            y: pos.y,
+                            z: pos.z,
+                            color: opponentColor,
+                            mesh: piece
+                        });
+                    }
+                });
+            }
+            
+            // 更新UI
+            clearMoveHistoryUI();
+            gameState.moveHistory.forEach(move => updateMoveHistoryUI(move));
+            
+            // 切换回上一个玩家
+            gameState.currentPlayer = lastMove.color;
+            document.getElementById('status').textContent = 
+                `${gameState.currentPlayer === 'black' ? '黑' : '白'}方回合`;
+            
+            return true;
+        }
+
+        // 检查位置是否已有棋子
+        function isPositionOccupied(x, y, z) {
+            return gameState.pieces.has(`${x},${y},${z}`);
+        }
+
+        // 切换玩家
+        function switchPlayer() {
+            gameState.currentPlayer = gameState.currentPlayer === 'black' ? 'white' : 'black';
+            document.getElementById('status').textContent = 
+                `${gameState.currentPlayer === 'black' ? '黑' : '白'}方回合`;
+        }
+
+        // 处理落子逻辑（包含提子机制）
+        function handlePiecePlacement(scene, x, y, z, cellSize) {
+            if (gameState.isGameOver || isPositionOccupied(x, y, z)) {
+                return false;
+            }
+            
+            // 检查是否自杀
+            if (isSuicide(x, y, z, gameState.currentPlayer, scene)) {
+                console.log("不允许自杀落子");
+                return false;
+            }
+            
+            // 放置棋子
+            const piece = placePiece(scene, x, y, z, gameState.currentPlayer, cellSize);
+            gameState.pieces.set(`${x},${y},${z}`, {
+                x, y, z, 
+                color: gameState.currentPlayer,
+                mesh: piece
+            });
+            
+            // 提走对方没有气的棋子
+            const opponentColor = gameState.currentPlayer === 'black' ? 'white' : 'black';
+            const captured = capturePieces(scene, opponentColor);
+            
+            // 记录落子（包含提子信息）
+            recordMove(x, y, z, gameState.currentPlayer, captured);
+            
+            // 切换玩家
+            switchPlayer();
+            return true;
+        }
+
+        // 初始化鼠标交互
+        function initInteraction(scene, camera, renderer, cellSize) {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            
+            function onMouseClick(event) {
+                // 右键点击用于平移，不处理落子
+                if (event.button !== 0) return;
+                
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(scene.children, true).filter(
+                    obj => obj.object.userData.type === 'vertex' || obj.object.userData.type === 'piece'
+                );
+                
+                if (intersects.length > 0) {
+                    const target = intersects[0].object;
+                    if (target.userData.type === 'vertex') {
+                        handlePiecePlacement(scene, target.userData.x, target.userData.y, target.userData.z, cellSize);
+                    }
+                }
+            }
+            
+            window.addEventListener('click', onMouseClick);
+        }
+
+        // 重置游戏
+        function resetGame(scene) {
+            // 移除所有棋子
+            gameState.pieces.forEach((piece) => {
+                scene.remove(piece.mesh);
+            });
+            gameState.pieces.clear();
+            
+            // 清空落子记录
+            gameState.moveHistory = [];
+            clearMoveHistoryUI();
+            
+            // 重置游戏状态
+            gameState.currentPlayer = 'black';
+            gameState.isGameOver = false;
+            document.getElementById('status').textContent = '黑方回合';
+        }
+        
+        // 重置视角
+        function resetView(camera, controls) {
+            camera.position.copy(gameState.defaultCameraPosition);
+            camera.lookAt(0, 0, 0);
+            if (controls && controls.target) {
+                controls.target.set(0, 0, 0);
+            }
+            if (controls && controls.update) {
+                controls.update();
+            }
+        }
+
+        // 自定义控制器加载函数
+        function loadCustomControls() {
+            window.FreeControls = function (object, domElement) {
+                this.object = object;
+                this.domElement = domElement || document;
+                
+                // 控制器配置
+                this.enabled = true;
+                this.target = new THREE.Vector3();
+                this.rotateSpeed = 1.0;
+                this.zoomSpeed = 1.2;
+                this.panSpeed = 0.5;
+                
+                // 完全移除所有旋转限制
+                this.noLimits = true;
+                
+                // 鼠标状态
+                this.mouseDown = false;
+                this.lastMouseX = 0;
+                this.lastMouseY = 0;
+                this.activeAction = null; // 'rotate' or 'pan'
+                
+                // 绑定事件
+                var scope = this;
+                this.domElement.addEventListener('mousedown', function(e) { scope.onMouseDown(e); }, false);
+                this.domElement.addEventListener('mousemove', function(e) { scope.onMouseMove(e); }, false);
+                this.domElement.addEventListener('mouseup', function(e) { scope.onMouseUp(e); }, false);
+                this.domElement.addEventListener('mousewheel', function(e) { scope.onMouseWheel(e); }, false);
+                this.domElement.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
+                
+                this.update();
+            };
+            
+            window.FreeControls.prototype = {
+                constructor: window.FreeControls,
+                
+                onMouseDown: function(event) {
+                    if (!this.enabled) return;
+                    event.preventDefault();
+                    
+                    this.mouseDown = true;
+                    this.lastMouseX = event.clientX;
+                    this.lastMouseY = event.clientY;
+                    
+                    // 左键旋转，右键平移
+                    if (event.button === 0) {
+                        this.activeAction = 'rotate';
+                        this.domElement.style.cursor = 'grabbing';
+                    } else if (event.button === 2) {
+                        this.activeAction = 'pan';
+                        this.domElement.style.cursor = 'move';
+                    }
+                },
+                
+                onMouseMove: function(event) {
+                    if (!this.enabled || !this.mouseDown) return;
+                    event.preventDefault();
+                    
+                    var deltaX = event.clientX - this.lastMouseX;
+                    var deltaY = event.clientY - this.lastMouseY;
+                    
+                    if (this.activeAction === 'rotate') {
+                        // 旋转逻辑
+                        this.rotateCamera(deltaX, deltaY);
+                    } else if (this.activeAction === 'pan') {
+                        // 平移逻辑
+                        this.panCamera(deltaX, deltaY);
+                    }
+                    
+                    this.lastMouseX = event.clientX;
+                    this.lastMouseY = event.clientY;
+                    this.update();
+                },
+                
+                onMouseUp: function() {
+                    this.mouseDown = false;
+                    this.activeAction = null;
+                    this.domElement.style.cursor = 'grab';
+                },
+                
+                onMouseWheel: function(event) {
+                    if (!this.enabled) return;
+                    event.preventDefault();
+                    
+                    // 缩放逻辑
+                    var zoomAmount = -event.deltaY * 0.001 * this.zoomSpeed;
+                    this.object.position.addScaledVector(
+                        new THREE.Vector3().subVectors(this.object.position, this.target).normalize(),
+                        zoomAmount
+                    );
+                    
+                    this.update();
+                },
+                
+                rotateCamera: function(deltaX, deltaY) {
+                    // 计算旋转角度
+                    var rotateX = deltaY * 0.005 * this.rotateSpeed;
+                    var rotateY = deltaX * 0.005 * this.rotateSpeed;
+                    
+                    // 创建旋转矩阵
+                    var matrix = new THREE.Matrix4();
+                    
+                    // 绕目标点的X轴旋转（上下翻转）
+                    matrix.makeRotationX(rotateX);
+                    this.object.position.sub(this.target);
+                    this.object.position.applyMatrix4(matrix);
+                    this.object.position.add(this.target);
+                    
+                    // 绕世界坐标系的Y轴旋转（左右旋转）
+                    matrix.makeRotationY(rotateY);
+                    this.object.position.sub(this.target);
+                    this.object.position.applyMatrix4(matrix);
+                    this.object.position.add(this.target);
+                    
+                    // 更新相机朝向
+                    this.object.lookAt(this.target);
+                },
+                
+                panCamera: function(deltaX, deltaY) {
+                    // 计算平移向量
+                    var panOffset = new THREE.Vector3();
+                    var te = this.object.matrix.elements;
+                    var right = new THREE.Vector3(te[0], te[1], te[2]);
+                    var up = new THREE.Vector3(te[4], te[5], te[6]);
+                    
+                    panOffset.subVectors(
+                        new THREE.Vector3(),
+                        right.multiplyScalar(deltaX * this.panSpeed * 0.1)
+                    );
+                    panOffset.add(up.multiplyScalar(deltaY * this.panSpeed * 0.1));
+                    
+                    // 平移相机和目标点
+                    this.object.position.add(panOffset);
+                    this.target.add(panOffset);
+                },
+                
+                update: function() {
+                    this.object.lookAt(this.target);
+                }
+            };
+            
+            console.log('自定义全方位控制器已加载');
+        }
+
+        // 游戏主函数
+        function initGame() {
+            // WebGL检测
+            window.Detector = {
+                webgl: (function() {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        return !!(window.WebGLRenderingContext && 
+                               (canvas.getContext('webgl') || 
+                                canvas.getContext('experimental-webgl')));
+                    } catch(e) {
+                        return false;
+                    }
+                })()
+            };
+
+            // 检查控制器是否加载
+            if (typeof THREE.OrbitControls === 'undefined') {
+                console.log('加载自定义控制器');
+                loadCustomControls();
+            }
+
+            const sceneData = initScene();
+            if (!sceneData) return;
+            
+            const { scene, camera, renderer, controls } = sceneData;
+            const { boardGroup, cellSize } = createBoard(scene, gameState.boardSize);
+            
+            initInteraction(scene, camera, renderer, cellSize);
+            
+            // 按钮事件
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                resetGame(scene);
+            });
+            
+            document.getElementById('resetViewBtn').addEventListener('click', () => {
+                resetView(camera, controls);
+            });
+            
+            document.getElementById('undoBtn').addEventListener('click', () => {
+                undoMove(scene, cellSize);
+            });
+            
+            // 动画循环
+            function animate() {
+                requestAnimationFrame(animate);
+                if (controls && controls.update) controls.update();
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            console.log("带提子机制的3D围棋初始化完成");
+        }
+
+        // 启动游戏
+        window.addEventListener('load', initGame);
+    </script>
+</body>
+</html>

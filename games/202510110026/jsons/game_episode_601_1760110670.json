@@ -1,0 +1,308 @@
+{
+  "episode": 601,
+  "steps": 344,
+  "total_reward": 33.0,
+  "illegal_moves": 0,
+  "passes": 311,
+  "avg_loss": 42.88189697265625,
+  "epsilon": 0.04470026135116646,
+  "moves": [
+    {
+      "step": 1,
+      "x": 6,
+      "y": 4,
+      "z": 5,
+      "color": "black",
+      "captured": [],
+      "boardState": "6,4,5:black"
+    },
+    {
+      "step": 2,
+      "x": 2,
+      "y": 0,
+      "z": 2,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;6,4,5:black"
+    },
+    {
+      "step": 3,
+      "x": 5,
+      "y": 1,
+      "z": 1,
+      "color": "black",
+      "captured": [],
+      "boardState": "2,0,2:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 4,
+      "x": 4,
+      "y": 3,
+      "z": 4,
+      "color": "white",
+      "captured": [],
+      "boardState": "2,0,2:white;4,3,4:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 5,
+      "x": 3,
+      "y": 5,
+      "z": 6,
+      "color": "black",
+      "captured": [],
+      "boardState": "2,0,2:white;3,5,6:black;4,3,4:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 6,
+      "x": 1,
+      "y": 2,
+      "z": 2,
+      "color": "white",
+      "captured": [],
+      "boardState": "1,2,2:white;2,0,2:white;3,5,6:black;4,3,4:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 7,
+      "x": 4,
+      "y": 2,
+      "z": 0,
+      "color": "black",
+      "captured": [],
+      "boardState": "1,2,2:white;2,0,2:white;3,5,6:black;4,2,0:black;4,3,4:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 8,
+      "x": 4,
+      "y": 3,
+      "z": 1,
+      "color": "white",
+      "captured": [],
+      "boardState": "1,2,2:white;2,0,2:white;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;6,4,5:black"
+    },
+    {
+      "step": 9,
+      "x": 6,
+      "y": 5,
+      "z": 6,
+      "color": "black",
+      "captured": [],
+      "boardState": "1,2,2:white;2,0,2:white;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 10,
+      "x": 3,
+      "y": 2,
+      "z": 6,
+      "color": "white",
+      "captured": [],
+      "boardState": "1,2,2:white;2,0,2:white;3,2,6:white;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 11,
+      "x": 3,
+      "y": 3,
+      "z": 4,
+      "color": "black",
+      "captured": [],
+      "boardState": "1,2,2:white;2,0,2:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 12,
+      "x": 1,
+      "y": 2,
+      "z": 5,
+      "color": "white",
+      "captured": [],
+      "boardState": "1,2,2:white;1,2,5:white;2,0,2:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 13,
+      "x": 5,
+      "y": 4,
+      "z": 4,
+      "color": "black",
+      "captured": [],
+      "boardState": "1,2,2:white;1,2,5:white;2,0,2:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,4,4:black;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 14,
+      "x": 0,
+      "y": 0,
+      "z": 6,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,4,4:black;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 15,
+      "x": 6,
+      "y": 0,
+      "z": 3,
+      "color": "black",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,4,4:black;6,0,3:black;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 16,
+      "x": 6,
+      "y": 4,
+      "z": 0,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,4,4:black;6,0,3:black;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 17,
+      "x": 2,
+      "y": 2,
+      "z": 0,
+      "color": "black",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,4,4:black;6,0,3:black;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 18,
+      "x": 3,
+      "y": 0,
+      "z": 0,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,4,4:black;6,0,3:black;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 19,
+      "x": 5,
+      "y": 6,
+      "z": 4,
+      "color": "black",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,4,4:black;5,6,4:black;6,0,3:black;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 20,
+      "x": 6,
+      "y": 2,
+      "z": 5,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,4,4:black;5,6,4:black;6,0,3:black;6,2,5:white;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 21,
+      "x": 5,
+      "y": 3,
+      "z": 1,
+      "color": "black",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,6,4:black;6,0,3:black;6,2,5:white;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 22,
+      "x": 2,
+      "y": 6,
+      "z": 2,
+      "color": "black",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,6,4:black;6,0,3:black;6,2,5:white;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 23,
+      "x": 5,
+      "y": 4,
+      "z": 6,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,4,6:white;5,6,4:black;6,0,3:black;6,2,5:white;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 24,
+      "x": 6,
+      "y": 3,
+      "z": 5,
+      "color": "black",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,4,6:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 25,
+      "x": 5,
+      "y": 5,
+      "z": 2,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,4,6:white;5,5,2:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black"
+    },
+    {
+      "step": 26,
+      "x": 6,
+      "y": 6,
+      "z": 6,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,4,6:white;5,5,2:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black;6,6,6:white"
+    },
+    {
+      "step": 27,
+      "x": 1,
+      "y": 1,
+      "z": 2,
+      "color": "black",
+      "captured": [],
+      "boardState": "0,0,6:white;1,1,2:black;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,4,6:white;5,5,2:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black;6,6,6:white"
+    },
+    {
+      "step": 28,
+      "x": 5,
+      "y": 5,
+      "z": 0,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,1,2:black;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,3,1:white;4,3,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,4,6:white;5,5,0:white;5,5,2:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black;6,6,6:white"
+    },
+    {
+      "step": 29,
+      "x": 4,
+      "y": 2,
+      "z": 5,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,1,2:black;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,2,5:white;4,3,1:white;4,3,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,4,6:white;5,5,0:white;5,5,2:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black;6,6,6:white"
+    },
+    {
+      "step": 30,
+      "x": 4,
+      "y": 6,
+      "z": 4,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,1,2:black;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,2,5:white;4,3,1:white;4,3,4:white;4,6,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,4,6:white;5,5,0:white;5,5,2:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black;6,6,6:white"
+    },
+    {
+      "step": 31,
+      "x": 5,
+      "y": 5,
+      "z": 6,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,1,2:black;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,2,5:white;4,3,1:white;4,3,4:white;4,6,4:white;5,1,1:black;5,3,1:black;5,4,4:black;5,4,6:white;5,5,0:white;5,5,2:white;5,5,6:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black;6,6,6:white"
+    },
+    {
+      "step": 32,
+      "x": 5,
+      "y": 3,
+      "z": 2,
+      "color": "white",
+      "captured": [],
+      "boardState": "0,0,6:white;1,1,2:black;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,2,0:black;4,2,5:white;4,3,1:white;4,3,4:white;4,6,4:white;5,1,1:black;5,3,1:black;5,3,2:white;5,4,4:black;5,4,6:white;5,5,0:white;5,5,2:white;5,5,6:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black;6,6,6:white"
+    },
+    {
+      "step": 33,
+      "x": 4,
+      "y": 1,
+      "z": 2,
+      "color": "black",
+      "captured": [],
+      "boardState": "0,0,6:white;1,1,2:black;1,2,2:white;1,2,5:white;2,0,2:white;2,2,0:black;2,6,2:black;3,0,0:white;3,2,6:white;3,3,4:black;3,5,6:black;4,1,2:black;4,2,0:black;4,2,5:white;4,3,1:white;4,3,4:white;4,6,4:white;5,1,1:black;5,3,1:black;5,3,2:white;5,4,4:black;5,4,6:white;5,5,0:white;5,5,2:white;5,5,6:white;5,6,4:black;6,0,3:black;6,2,5:white;6,3,5:black;6,4,0:white;6,4,5:black;6,5,6:black;6,6,6:white"
+    }
+  ]
+}
